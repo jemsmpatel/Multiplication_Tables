@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Multiplication Quiz</title>
+    <script defer>
+        let num1, num2, min, max;
+
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return parseInt(urlParams.get(param));
+        }
+
+        function getRandomNumber(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function generateQuestion() {
+            min = getQueryParam("min") || 10;
+            max = getQueryParam("max") || 20;
+            const secondMax = 10;
+
+            let a = getRandomNumber(min, max);
+            let b = getRandomNumber(1, secondMax);
+
+            if (Math.random() < 0.5) {
+                num1 = a;
+                num2 = b;
+            } else {
+                num1 = b;
+                num2 = a;
+            }
+
+            document.getElementById("question").textContent = `What is ${num1} × ${num2}?`;
+            document.getElementById("answer").value = "";
+            document.getElementById("feedback").textContent = "";
+            document.getElementById("answer").focus();
+        }
+
+        function checkAnswer() {
+            const userAnswer = parseInt(document.getElementById("answer").value);
+            const correctAnswer = num1 * num2;
+            const feedback = document.getElementById("feedback");
+            if (userAnswer === correctAnswer) {
+                feedback.textContent = "Correct! ✅";
+                feedback.className = "text-green-600 mt-2";
+            } else {
+                feedback.textContent = `Wrong! ❌ Correct answer is ${correctAnswer}`;
+                feedback.className = "text-red-600 mt-2";
+            }
+            setTimeout(generateQuestion, 1500);
+        }
+
+        window.onload = () => {
+            generateQuestion();
+            document.getElementById("quizForm").addEventListener("submit", function (e) {
+                e.preventDefault();
+                checkAnswer();
+            });
+        };
+    </script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
+        <h1 class="text-2xl font-bold mb-4 text-center">Multiplication Quiz</h1>
+        <p id="question" class="text-xl font-medium text-center mb-4"></p>
+        <form id="quizForm" class="flex flex-col items-center">
+            <input id="answer" type="number" class="border border-gray-300 rounded px-4 py-2 w-1/2 text-center"
+                placeholder="Enter answer" required autocomplete="off" />
+            <button type="submit" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                Submit
+            </button>
+            <p id="feedback" class="mt-2 text-lg"></p>
+        </form>
+    </div>
+</body>
+
+</html>

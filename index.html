@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Multiplication Quiz Setup</title>
+    <script defer>
+        function goToQuizPage(e) {
+            e.preventDefault();
+            const min = document.getElementById("minValue").value;
+            const max = document.getElementById("maxValue").value;
+
+            if (parseInt(min) > parseInt(max)) {
+                alert("Minimum value should be less than or equal to maximum value.");
+                return;
+            }
+
+            // Send values via URL parameters
+            window.location.href = `quiz.html?min=${min}&max=${max}`;
+        }
+
+        window.onload = () => {
+            document.getElementById("setupForm").addEventListener("submit", goToQuizPage);
+        };
+    </script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
+        <h1 class="text-2xl font-bold mb-4 text-center">Setup Quiz Range</h1>
+        <form id="setupForm" class="flex flex-col gap-4">
+            <label class="flex flex-col">
+                <span class="mb-1">Minimum Table Value (e.g., 10)</span>
+                <input id="minValue" type="number" class="border rounded px-4 py-2" required min="1">
+            </label>
+            <label class="flex flex-col">
+                <span class="mb-1">Maximum Table Value (e.g., 20)</span>
+                <input id="maxValue" type="number" class="border rounded px-4 py-2" required min="1">
+            </label>
+            <button type="submit" class="bg-blue-500 text-white py-2 rounded hover:bg-blue-600">Start Quiz</button>
+        </form>
+    </div>
+</body>
+
+</html>
