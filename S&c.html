@@ -1,0 +1,98 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Math Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center"><div class="w-full max-w-md p-6 bg-gray-800 rounded-2xl shadow-xl">
+  <h1 class="text-2xl font-bold text-center mb-4">🔥 Math Quiz</h1>  <div id="setup">
+    <label class="block mb-2">Select Mode:</label>
+    <select id="mode" class="w-full p-2 rounded bg-gray-700 mb-4">
+      <option value="square">Square</option>
+      <option value="cube">Cube</option>
+    </select><label class="block mb-2">Enter Max Number:</label>
+<input id="maxNum" type="number" class="w-full p-2 rounded bg-gray-700 mb-4" placeholder="e.g. 20">
+
+<button onclick="startQuiz()" class="w-full bg-blue-500 hover:bg-blue-600 p-2 rounded">Start Quiz</button>
+
+  </div>  <div id="quiz" class="hidden">
+    <p id="question" class="text-xl mb-4"></p><input id="answer" type="number" class="w-full p-2 rounded bg-gray-700 mb-4" placeholder="Type answer">
+
+<button onclick="checkAnswer()" class="w-full bg-green-500 hover:bg-green-600 p-2 rounded mb-2">Submit</button>
+
+<p id="feedback" class="text-center"></p>
+<p id="attempts" class="text-sm text-gray-400 text-center"></p>
+
+  </div>
+</div><script>
+let numbers = [];
+let current = null;
+let mode = '';
+let attempts = 0;
+
+function startQuiz() {
+  mode = document.getElementById('mode').value;
+  const max = parseInt(document.getElementById('maxNum').value);
+
+  if (!max || max < 1) {
+    alert('Enter valid number');
+    return;
+  }
+
+  numbers = Array.from({length: max}, (_, i) => i + 1);
+  shuffle(numbers);
+
+  document.getElementById('setup').classList.add('hidden');
+  document.getElementById('quiz').classList.remove('hidden');
+
+  nextQuestion();
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+
+function nextQuestion() {
+  if (numbers.length === 0) {
+    document.getElementById('question').innerText = '🎉 Quiz Completed!';
+    document.getElementById('answer').style.display = 'none';
+    return;
+  }
+
+  current = numbers.pop();
+  attempts = 0;
+
+  document.getElementById('feedback').innerText = '';
+  document.getElementById('attempts').innerText = '';
+  document.getElementById('answer').value = '';
+
+  document.getElementById('question').innerText = mode === 'square'
+    ? `${current}² = ?`
+    : `${current}³ = ?`;
+}
+
+function checkAnswer() {
+  const userAns = parseInt(document.getElementById('answer').value);
+  const correct = mode === 'square'
+    ? current * current
+    : current * current * current;
+
+  if (userAns === correct) {
+    document.getElementById('feedback').innerText = '✅ Correct!';
+    setTimeout(nextQuestion, 800);
+  } else {
+    attempts++;
+    if (attempts >= 3) {
+      document.getElementById('feedback').innerText = `❌ Wrong! Correct: ${correct}`;
+      setTimeout(nextQuestion, 1200);
+    } else {
+      document.getElementById('feedback').innerText = '❌ Wrong! Try again';
+      document.getElementById('attempts').innerText = `Attempts left: ${3 - attempts}`;
+    }
+  }
+}
+</script></body>
+</html>
