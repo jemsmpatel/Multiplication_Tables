@@ -10,7 +10,10 @@
     <select id="mode" class="w-full p-2 rounded bg-gray-700 mb-4">
       <option value="square">Square</option>
       <option value="cube">Cube</option>
-    </select><label class="block mb-2">Enter Max Number:</label>
+    </select><label class="block mb-2">Enter Min Number:</label>
+<input id="minNum" type="number" class="w-full p-2 rounded bg-gray-700 mb-4" placeholder="e.g. 1">
+
+<label class="block mb-2">Enter Max Number:</label>
 <input id="maxNum" type="number" class="w-full p-2 rounded bg-gray-700 mb-4" placeholder="e.g. 20">
 
 <button onclick="startQuiz()" class="w-full bg-blue-500 hover:bg-blue-600 p-2 rounded">Start Quiz</button>
@@ -23,6 +26,11 @@
 <p id="feedback" class="text-center"></p>
 <p id="attempts" class="text-sm text-gray-400 text-center"></p>
 
+  </div>  <div id="result" class="hidden text-center">
+    <h2 class="text-xl font-bold mb-4">🎉 Quiz Completed!</h2>
+    <p id="score" class="mb-2"></p>
+    <div id="details" class="text-sm text-gray-300 mb-4"></div>
+    <button onclick="restartQuiz()" class="w-full bg-purple-500 hover:bg-purple-600 p-2 rounded">Restart Quiz</button>
   </div>
 </div><script>
 let numbers = [];
@@ -30,20 +38,34 @@ let current = null;
 let mode = '';
 let attempts = 0;
 
+let totalQuestions = 0;
+let correctCount = 0;
+let wrongCount = 0;
+let attemptDetails = [];
+
 function startQuiz() {
   mode = document.getElementById('mode').value;
+  const min = parseInt(document.getElementById('minNum').value);
   const max = parseInt(document.getElementById('maxNum').value);
 
-  if (!max || max < 1) {
-    alert('Enter valid number');
+  if (!min || !max || min < 1 || max < min) {
+    alert('Enter valid min & max');
     return;
   }
 
-  numbers = Array.from({length: max}, (_, i) => i + 1);
+  numbers = [];
+  for (let i = min; i <= max; i++) numbers.push(i);
+
+  totalQuestions = numbers.length;
+  correctCount = 0;
+  wrongCount = 0;
+  attemptDetails = [];
+
   shuffle(numbers);
 
   document.getElementById('setup').classList.add('hidden');
   document.getElementById('quiz').classList.remove('hidden');
+  document.getElementById('result').classList.add('hidden');
 
   nextQuestion();
 }
@@ -57,8 +79,7 @@ function shuffle(arr) {
 
 function nextQuestion() {
   if (numbers.length === 0) {
-    document.getElementById('question').innerText = '🎉 Quiz Completed!';
-    document.getElementById('answer').style.display = 'none';
+    showResult();
     return;
   }
 
@@ -81,11 +102,15 @@ function checkAnswer() {
     : current * current * current;
 
   if (userAns === correct) {
+    correctCount++;
+    attemptDetails.push(`${current} → solved in ${attempts + 1} attempt(s)`);
     document.getElementById('feedback').innerText = '✅ Correct!';
     setTimeout(nextQuestion, 800);
   } else {
     attempts++;
     if (attempts >= 3) {
+      wrongCount++;
+      attemptDetails.push(`${current} → failed (Correct: ${correct})`);
       document.getElementById('feedback').innerText = `❌ Wrong! Correct: ${correct}`;
       setTimeout(nextQuestion, 1200);
     } else {
@@ -93,6 +118,22 @@ function checkAnswer() {
       document.getElementById('attempts').innerText = `Attempts left: ${3 - attempts}`;
     }
   }
+}
+
+function showResult() {
+  document.getElementById('quiz').classList.add('hidden');
+  document.getElementById('result').classList.remove('hidden');
+
+  document.getElementById('score').innerText =
+    `✅ Correct: ${correctCount} | ❌ Wrong: ${wrongCount}`;
+
+  document.getElementById('details').innerHTML = attemptDetails.join('<br>');
+}
+
+function restartQuiz() {
+  document.getElementById('setup').classList.remove('hidden');
+  document.getElementById('quiz').classList.add('hidden');
+  document.getElementById('result').classList.add('hidden');
 }
 </script></body>
 </html>
